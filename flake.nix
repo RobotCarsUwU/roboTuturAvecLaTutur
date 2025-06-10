@@ -31,20 +31,9 @@
             python-with-opencv
             pkgs.pkg-config
             pkgs.stdenv.cc.cc.lib
+            pkgs.python3Packages.pip
+            pkgs.usbutils
           ];
-
-          shellHook = ''
-            export LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH
-
-            # --- BEGIN ADDED FOR depthai ---
-            if ! python -c 'import depthai' &>/dev/null; then
-              echo "Installing depthai via pip..."
-              pip install --upgrade pip depthai
-            fi
-            # --- END ADDED ---
-
-            echo "Python environment ready with OpenCV $(python -c 'import cv2; print(cv2.__version__)')"
-          '';
         };
       }
     );
