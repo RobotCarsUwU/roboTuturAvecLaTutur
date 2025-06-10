@@ -49,10 +49,7 @@ def capture_controller(joystick, serial_port, speed_limit):
                 brake = capture_brake(joystick)
                 speed = capture_acceleration(joystick) + capture_brake(joystick)
 
-                if speed > speed_limit / 100 :
-                    speed = speed_limit / 100
-                if speed < -0.15 :
-                    speed = 0.15
+                speed *= speed_limit / 100
                 print(f"steering: {steering}, brake: {brake}, speed: {speed}")
                 run_motor(speed, steering, motor)
     finally:
