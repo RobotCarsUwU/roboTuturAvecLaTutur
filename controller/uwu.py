@@ -36,7 +36,7 @@ def capture_steering(joystick):
         steering = 0
     return steering
 
-def capture_controller(joystick, serial_port):
+def capture_controller(joystick, serial_port, speed_limit):
     motor = pyvesc.VESC(serial_port)
     steering = None
     speed = None
@@ -49,6 +49,10 @@ def capture_controller(joystick, serial_port):
                 brake = capture_brake(joystick)
                 speed = capture_acceleration(joystick) + capture_brake(joystick)
 
+                if (speed > speed_limit / 100)
+                    speed = speed_limit / 100
+                if (speed < -0.15)
+                    speed = 0.15
                 print(f"steering: {steering}, brake: {brake}, speed: {speed}")
                 run_motor(speed, steering, motor)
     finally:
@@ -56,9 +60,10 @@ def capture_controller(joystick, serial_port):
 
 def main():
     serial_port = '/dev/ttyACM0'
+    speed_limit = 30
     joystick = None
     joystick = initialize_controller(joystick)
-    capture_controller(joystick, serial_port)
+    capture_controller(joystick, serial_port, speed_limit)
 
 if __name__ == '__main__':
     exit(main())
