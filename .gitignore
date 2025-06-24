@@ -2,3 +2,9 @@ venv
 .venv
 .direnv
 .depthai
+.*
+car_videos
+car_pictures
+tests_data
+training_set
+__pycache__

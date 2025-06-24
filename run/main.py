@@ -15,7 +15,7 @@ from raycast import raycast
 import numpy as np
 import json
 from tensorflow import keras
-from Ai.NeuralNetwork.MLP import MLP
+from Ai.NeuralNetwork.MLP.MLP import MLP
 
 def main():
     model_path = "./unet_simple.weights.h5"

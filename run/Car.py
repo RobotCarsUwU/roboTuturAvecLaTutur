@@ -10,8 +10,8 @@ import pyvesc
 class Car:
     def __init__(self, serial_port):
         self.motor = pyvesc.VESC(serial_port)
-        steering = None
-        speed = None
+        self.steering = None
+        self.speed = None
     
     def setSpeed(self, speed):
         self.motor.set_duty_cycle(speed)
