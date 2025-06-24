@@ -1,5 +1,6 @@
 import cv2
 import math
+import numpy as np
 
 def raycast(image_path_or_array, n=30):
     if isinstance(image_path_or_array, str):
@@ -32,10 +33,6 @@ def raycast(image_path_or_array, n=30):
                 d = t
                 break
         
-        if d is not None:
-            d = d / maxd
-        else:
-            d = 1.0
         distances.append(d)
     
-    return distances
+    return np.array([distances])
