@@ -10,6 +10,7 @@ from UNet import UNetDetector
 import os
 import depthai as dai
 import cv2
+from raycast import raycast
 
 def main():
     model_path = "./unet_simple.weights.h5"
@@ -46,6 +47,9 @@ def main():
         while True:
             frame = qRgb.get().getCvFrame()
             result = detector.predict(frame)
+            distances = raycast(result, n=48)
+            for i, d in enumerate(distances):
+                print(f"Ray {i}: {d}")
             cv2.imshow("RGB Preview", result)
             key = cv2.waitKey(1)
             if key == ord('s'):
