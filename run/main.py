@@ -6,6 +6,7 @@
 ##
 
 import tensorflow as tf
+from Car import Car
 from UNet import UNetDetector
 import os
 import depthai as dai
@@ -62,6 +63,9 @@ def main():
     xoutRgb.setStreamName("rgb")
     camRgb.preview.link(xoutRgb.input)
 
+    car = Car('/dev/ttyACM0')
+    speed_rate = 0.05
+
     with dai.Device(pipeline) as dev:
         qRgb = dev.getOutputQueue("rgb", maxSize=4, blocking=False)
         step_count = 0
@@ -73,8 +77,11 @@ def main():
             raycast_normalized = (distances - min_vals) / range_vals
             predictions = model(raycast_normalized, training=False).numpy()
 
-            speed = np.clip(predictions[0][0], 0.0, 0.8)
+            speed = np.clip(predictions[0][0], 0.0, 0.8) * speed_rate
             steering = np.clip(predictions[0][1], -0.8, 0.8)
+
+            car.setSpeed(speed)
+            car.setSteering(steering)
 
             if step_count % 50 == 0:
                 print(f"Step {step_count}, Speed: {speed:.3f}, Steering: {steering:.3f}")
@@ -89,6 +96,7 @@ def main():
             elif key == ord('q'):
                 break
     cv2.destroyAllWindows()
+    car.destroy()
 
 
 if __name__ == "__main__":
