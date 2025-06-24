@@ -9,6 +9,9 @@ from PIL import Image, ImageDraw
 import matplotlib.image as mpimg
 import numpy as np
 
+img_width = 640
+img_height = 180
+
 def create_line_mask(image):
     height, width = image.shape[:2]
     vertices = [(0, height - 1), (width // 2, height // 3), (width - 1, height - 1)]
@@ -32,7 +35,7 @@ def resize_image(image, new_shape):
     img_resized = img_pil.resize((new_shape[1], new_shape[0]), Image.BILINEAR)
     return np.array(img_resized)
 
-def data_generator(image_paths, input_size=(180,320), batch_size=32):
+def data_generator(image_paths, input_size=(img_height, img_width), batch_size=16):
     batch_X, batch_y = [], []
     for path in image_paths:
         img = mpimg.imread(path)
@@ -54,7 +57,7 @@ def data_generator(image_paths, input_size=(180,320), batch_size=32):
     if batch_X:
         yield np.array(batch_X), np.array(batch_y)
 
-def paired_data_generator(input_paths, mask_paths, input_size=(180,320), batch_size=4):
+def paired_data_generator(input_paths, mask_paths, input_size=(img_height,img_width), batch_size=16):
     assert len(input_paths) == len(mask_paths), "Input et mask lists doivent être de même longueur"
     idxs = np.arange(len(input_paths))
     while True:
@@ -79,4 +82,3 @@ def paired_data_generator(input_paths, mask_paths, input_size=(180,320), batch_s
                 batch_y.append(np.expand_dims(m, axis=-1))
 
             yield np.array(batch_X), np.array(batch_y)
-

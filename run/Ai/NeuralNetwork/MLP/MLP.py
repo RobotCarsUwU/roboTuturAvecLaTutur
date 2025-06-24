@@ -1,3 +1,10 @@
+##
+## EPITECH PROJECT, 2025
+## MLP
+## File description:
+## MLP
+##
+
 import keras
 from keras import layers
 import tensorflow as tf

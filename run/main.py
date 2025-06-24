@@ -31,7 +31,7 @@ def main():
     print("Model loaded")
 
     try:
-        model = keras.models.load_model('./racing_model.keras', custom_objects={'MLP': MLP})
+        model = keras.models.load_model('racing_model.keras', custom_objects={'MLP': MLP})
         print("AI Model loaded")
     except:
         print("Unable to load keras model")
