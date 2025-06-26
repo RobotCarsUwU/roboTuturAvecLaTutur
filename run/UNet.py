@@ -55,28 +55,30 @@ class UNetDetector:
         self.input_size = input_size
         self.model = unet_model(input_size)
         self.post_processor = PostProcessor()
+        
         def dice_coef(y_true, y_pred, smooth=1):
-            y_true_f = tf.reshape(tf.cast(y_true, tf.float32), [-1])
-            y_pred_f = tf.reshape(tf.cast(y_pred, tf.float32), [-1])
-            intersection = tf.reduce_sum(y_true_f * y_pred_f)
+            y_true_f = tf.keras.backend.flatten(tf.cast(y_true, tf.float32))
+            y_pred_f = tf.keras.backend.flatten(tf.cast(y_pred, tf.float32))
+            intersection = tf.keras.backend.sum(y_true_f * y_pred_f)
             return (2. * intersection + smooth) / (
-                tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth
+                tf.keras.backend.sum(y_true_f) + tf.keras.backend.sum(y_pred_f) + smooth
             )
+            
         def dice_loss(y_true, y_pred):
             smooth = 1
-            y_true_f = tf.reshape(tf.cast(y_true, tf.float32), [-1])
-            y_pred_f = tf.reshape(tf.cast(y_pred, tf.float32), [-1])
-            intersection = tf.reduce_sum(y_true_f * y_pred_f)
+            y_true_f = tf.keras.backend.flatten(tf.cast(y_true, tf.float32))
+            y_pred_f = tf.keras.backend.flatten(tf.cast(y_pred, tf.float32))
+            intersection = tf.keras.backend.sum(y_true_f * y_pred_f)
             return 1 - (2. * intersection + smooth) / (
-                tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth
+                tf.keras.backend.sum(y_true_f) + tf.keras.backend.sum(y_pred_f) + smooth
             )
 
         def focal_loss(y_true, y_pred, gamma=2., alpha=.25):
             y_true = tf.cast(y_true, tf.float32)
             y_pred = tf.clip_by_value(y_pred, tf.keras.backend.epsilon(), 1. - tf.keras.backend.epsilon())
-            cross_entropy = -y_true * tf.math.log(y_pred) - (1 - y_true) * tf.math.log(1 - y_pred)
-            weight = alpha * tf.pow(1 - y_pred, gamma)
-            return tf.reduce_mean(weight * cross_entropy)
+            cross_entropy = -y_true * tf.keras.backend.log(y_pred) - (1 - y_true) * tf.keras.backend.log(1 - y_pred)
+            weight = alpha * tf.keras.backend.pow(1 - y_pred, gamma)
+            return tf.keras.backend.mean(weight * cross_entropy)
 
         def total_loss(y_true, y_pred):
             return focal_loss(y_true=y_true, y_pred=y_pred) + dice_loss(y_true, y_pred)
@@ -96,7 +98,6 @@ class UNetDetector:
             verbose=1
         )
 
-
     def predict(self, image):
         original_shape = image.shape[:2]
 
@@ -111,13 +112,14 @@ class UNetDetector:
         pred = self.model(img, training=False).numpy()[0, :, :, 0]
 
         pred = np.tanh(5 * (pred - 0.5)) * 0.5 + 0.5
-        pred_resized = tf.image.resize(pred[..., np.newaxis], original_shape).numpy()
+        
+        # Utilisation de cv2.resize au lieu de tf.image.resize pour compatibilité
+        pred_resized = cv2.resize(pred, (original_shape[1], original_shape[0]))
 
-        mask = (pred_resized[:, :, 0] > 0.5).astype(np.uint8) * 255
+        mask = (pred_resized > 0.5).astype(np.uint8) * 255
         mask = self.post_processor.process(mask)
         return mask
         
-
     def save(self, path):
         self.model.save_weights(path)
 

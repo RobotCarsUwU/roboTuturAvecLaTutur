@@ -21,7 +21,7 @@ def main():
     model_path = "./unet_simple.weights.h5"
 
     gpus = tf.config.experimental.list_physical_devices("GPU")
-    print(f"Gpus are: {gpus}")
+    print("Gpus are: {}".format(gpus))
 
     if gpus:
         tf.config.experimental.set_memory_growth(gpus[0], True)
@@ -84,7 +84,7 @@ def main():
             car.setSteering(steering)
 
             if step_count % 50 == 0:
-                print(f"Step {step_count}, Speed: {speed:.3f}, Steering: {steering:.3f}")
+                print("Step {}, Speed: {:.3f}, Steering: {:.3f}".format(step_count, speed, steering))
 
             step_count += 1
 

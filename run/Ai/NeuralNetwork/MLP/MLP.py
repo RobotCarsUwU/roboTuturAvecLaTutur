@@ -54,4 +54,3 @@ class MLP(keras.Model):
     @classmethod
     def from_config(cls, config):
         return cls(**config)
-
